@@ -1,14 +1,18 @@
 const User = require('../models/user.model');
+const bcrypt = require('bcryptjs')
 const createUser = async (req, res) => {
   try {
-    const { name, email } = req.body;
+    const { name, email, password } = req.body;
 
     if (!name || !email) {
       return res.status(400).json({ message: "Name and email are required" });
     }
 
-    const userRes = await User.create({ name, email }); // data in going to save in db, so it will take time
-
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const userRes = await User.create({ name, email, password: hashedPassword }); // data in going to save in db, so it will take time
+    
+    delete userRes.password; // password is not deleted here// need to delete password
+    
     res.status(200).json(userRes);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -39,7 +43,6 @@ const updateUser = async(req, res) => {
     // updated user should return the updated value : currently getting older value
     const updateUser = await User.findByIdAndUpdate(req.params.id, req.body)
     res.status(200).json(updateUser);
-    console.log('updateUser', updateUser);
 
     if(!updateUser || updateUser === null){
         return res.status(404).json({message: "User Not Found"})
@@ -58,13 +61,38 @@ const deleteUser = async(req, res) => {
 
 }
 
+const login = async(req, res) =>{
+  const {email, password} = req.body;
+
+  const user = await User.findOne({email: email});
+
+  if(!user){
+      res.json({
+      message:"Invalid credentials"
+    }) 
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password)
+
+  if(isPasswordValid){
+    res.json({
+      message:"login successfully"
+    }) 
+  }else{
+    res.json({
+      message:"Invalid credentials"
+    })
+  }
+}
+
 
 module.exports = {
     createUser,
     getUsers,
     getUserById,
     updateUser,
-    deleteUser
+    deleteUser,
+    login
 }
 
 

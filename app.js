@@ -3,6 +3,7 @@ const connectDb = require('./config/db')
 
 const userRouter = require('./routes/userRoutes')
 const orderRouter = require('./routes/orderRoutes')
+const profileRouter = require('./routes/profileRoutes')
 
 const app = express();
 app.use(express.json());
@@ -11,6 +12,7 @@ connectDb();
 
 app.use('/users', userRouter)
 app.use('/order', orderRouter)
+app.use('/profile', profileRouter)
 
 app.listen(3000, () => {
   console.log("server is running on port 3000");

@@ -1,5 +1,6 @@
 const User = require('../models/user.model');
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 const createUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -61,6 +62,17 @@ const deleteUser = async(req, res) => {
 
 }
 
+//protected route
+const accessMyProfile = async(req, res) =>{
+  
+  // logic - post authentication logic
+  
+    res.json({
+    message: 'This is protected..... And you are with valid credentials so you can access this API',
+  })
+
+}
+
 const login = async(req, res) =>{
   const {email, password} = req.body;
 
@@ -75,8 +87,12 @@ const login = async(req, res) =>{
   const isPasswordValid = await bcrypt.compare(password, user.password)
 
   if(isPasswordValid){
+
+    const token = jwt.sign({userId: user._id}, 'secret_key', {expiresIn: '1hr'})
+
     res.json({
-      message:"login successfully"
+      message:"login successfully",
+      token
     }) 
   }else{
     res.json({
@@ -92,7 +108,8 @@ module.exports = {
     getUserById,
     updateUser,
     deleteUser,
-    login
+    login,
+    accessMyProfile
 }
 
 

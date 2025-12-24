@@ -66,6 +66,7 @@ const deleteUser = async(req, res) => {
 const accessMyProfile = async(req, res) =>{
   
   // logic - post authentication logic
+    console.log("req.body from accessmyProfile", req.body)
   
     res.json({
     message: 'This is protected..... And you are with valid credentials so you can access this API',

@@ -12,18 +12,19 @@ const authMiddleware = (req, res, next)=>{
       //verify token
       try {
         const decoded = jwt.verify(token, 'secret_key')
+        console.log('decoded', decoded)
         //decrypt
-        if(req.body.age < 18){
-          req.body.isUserCanVote = false
-        }else{
-          req.body.isUserCanVote = true
-
+       
+        if(!req.body){
+          req.body = {}
         }
+
         req.body.user = decoded;
-        req.body.message = 'this is verified user from auth';
+        
         next();  // forword to next function
 
       } catch (error) {
+        console.log("error", error)
         return res.status(401).json({message: 'Invalid or expired token'});
       }
 }

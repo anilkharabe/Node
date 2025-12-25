@@ -9,23 +9,4 @@ const updateUserSchema = Joi.object({
     profileId: Joi.forbidden()
 })
 
-const updateValidationMiddleware = (req, res, next)=>{
-    // req.body
-    const {error} = updateUserSchema.validate(req.body,{
-        abortEarly: false
-    })
-
-    if(error){
-        return res.status(400).json({
-            message:'validation failed',
-            error: error.details.map((e)=>{
-                return e.message
-            })
-        })
-    }
-
-    next();
-}
-
-
-module.exports = updateValidationMiddleware;
+module.exports = { updateUserSchema };

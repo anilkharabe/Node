@@ -3,14 +3,14 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const createUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     if (!name || !email) {
       return res.status(400).json({ message: "Name and email are required" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
-    const userRes = await User.create({ name, email, password: hashedPassword }); // data in going to save in db, so it will take time
+    const userRes = await User.create({ name, email, password: hashedPassword, role }); // data in going to save in db, so it will take time
     
     delete userRes.password; // password is not deleted here// need to delete password
     
@@ -89,7 +89,7 @@ const login = async(req, res) =>{
 
   if(isPasswordValid){
 
-    const token = jwt.sign({userId: user._id}, 'secret_key', {expiresIn: '1hr'})
+    const token = jwt.sign({userId: user._id, role: user.role}, 'secret_key', {expiresIn: '1hr'})
 
     res.json({
       message:"login successfully",

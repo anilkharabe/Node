@@ -1,4 +1,4 @@
-
+const logger = require("../config/logger");
 function joiValidator(schema){
     const validationMiddleware = (req, res, next)=>{
         const {error} = schema.validate(req.body,{
@@ -6,6 +6,7 @@ function joiValidator(schema){
         })
 
         if(error){
+            logger.error(error)
             return res.status(400).json({
                 message:'validation failed',
                 error: error.details.map((e)=>{

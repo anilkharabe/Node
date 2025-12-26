@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const logger = require("../config/logger");
 
 const authMiddleware = (req, res, next)=>{
      const authHeader = req.headers.authorization;
@@ -12,7 +13,7 @@ const authMiddleware = (req, res, next)=>{
       //verify token
       try {
         const decoded = jwt.verify(token, 'secret_key')
-        console.log('decoded', decoded)
+        logger.info('decoded', decoded)
         //decrypt
        
         if(!req.body){
@@ -24,8 +25,8 @@ const authMiddleware = (req, res, next)=>{
         next();  // forword to next function
 
       } catch (error) {
-        console.log("error", error)
-        return res.status(401).json({message: 'Invalid or expired token'});
+        
+        return res.status(401).json({message: 'Invalid logger.error("error", error)or expired token'});
       }
 }
 

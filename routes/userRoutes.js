@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const { createUser, getUsers, getUserById, updateUser, deleteUser, login, accessMyProfile} = require("../controllers/user.controller");
+const { createUser, getUsers, getUserById, updateUser, deleteUser, login, accessMyProfile, uploadUserFromExcel} = require("../controllers/user.controller");
 const authMiddleware = require('../middleware/auth.middleware')
 const joiValidator = require('../middleware/joiValidator.middleware');
 const { updateUserSchema } = require('../middleware/updateUser.middleware')
 const { createUserSchema } = require('../middleware/createUser.middleware')
-const authorizeRoles = require('../middleware/role.middleware')
+const authorizeRoles = require('../middleware/role.middleware');
+const excelUpload = require('../middleware/excel.middleware')
 
 
 // post: for adding the data in users
@@ -27,5 +28,7 @@ router.delete("/:id", authMiddleware, authorizeRoles(['admin']),   deleteUser);
 router.post('/login', login)
 
 router.post('/accessMyProfile', authMiddleware, accessMyProfile) // routing based middleware
+
+router.post('/upload-excel', excelUpload.single('file'), uploadUserFromExcel) // routing based middleware
 
 module.exports = router;

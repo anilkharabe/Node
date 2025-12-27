@@ -1,6 +1,8 @@
 const User = require('../models/user.model');
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const xlsx = require('xlsx')
+
 const createUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
@@ -102,6 +104,57 @@ const login = async(req, res) =>{
   }
 }
 
+const uploadUserFromExcel = async(req, res)=>{
+  try {
+    // console.log("req.file", req.file)
+    
+    if(!req.file){
+      return res.status(400).json({message:"Excel file is required"})
+    }
+    
+    // Read workbook(entire file)
+    const workbook = xlsx.read(req.file.buffer, {type: 'buffer'})
+    // console.log('workbook', workbook)
+
+
+    // read Sheet
+    const sheetName = workbook.SheetNames[0];
+    // console.log('sheetName', sheetName)
+
+    //reading data from sheet
+    const sheet =  workbook.Sheets[sheetName];
+    // console.log('sheet', sheet)
+
+
+    // converting data into json
+    const rows = xlsx.utils.sheet_to_json(sheet)
+    // console.log('rows', rows)
+
+    if(rows.length ===0){
+      return res.status(400).json({message:"Excel file is empty"})
+    }
+
+    const userList = await Promise.all(
+      rows.map(async(row)=>({
+        name: row.name,
+        email: row.email,
+        password: await bcrypt.hash(row.password, 10),
+        role: row.role,
+      }))
+    )
+
+    await User.insertMany(userList, {ordered: false})
+
+
+    res.status(200).json({message:"uploaded successfully", totalInserted: userList.length})
+  } catch (error) {
+    res.status(500).json({
+      message: 'Excel upload failed',
+      error: error.message
+    })
+  }
+}
+
 
 module.exports = {
     createUser,
@@ -110,7 +163,8 @@ module.exports = {
     updateUser,
     deleteUser,
     login,
-    accessMyProfile
+    accessMyProfile,
+    uploadUserFromExcel
 }
 
 

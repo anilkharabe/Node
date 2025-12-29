@@ -2,6 +2,7 @@ const User = require('../models/user.model');
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const xlsx = require('xlsx')
+const {sendEmail} = require('../src/email/email.service')
 
 const createUser = async (req, res) => {
   try {
@@ -16,8 +17,11 @@ const createUser = async (req, res) => {
     
     delete userRes.password; // password is not deleted here// need to delete password
     
+    await sendEmail({to:email, subject:'Welcome to node js: my app', templateName: 'welcome', data:{name, email}})
+
     res.status(200).json(userRes);
   } catch (error) {
+    console.log('error', error)
     return res.status(500).json({ message: error.message });
   }
 }

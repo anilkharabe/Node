@@ -7,6 +7,7 @@ const handlebars = require('handlebars');
 
 let transporter;
 const createTrasporter = async()=>{
+    console.log('createTrasporter is running')
     const testAccount =await nodemailer.createTestAccount();
 
     transporter = nodemailer.createTransport({
@@ -20,7 +21,7 @@ const createTrasporter = async()=>{
   });
 }
 
-createTrasporter()
+
 
 
 const compileTemplate = (templateName, data)=>{
@@ -33,9 +34,7 @@ const compileTemplate = (templateName, data)=>{
 
 
 const sendEmail = async ({to, subject, templateName, data})=>{
-    
-    console.log('to', to);
-    console.log('subject', subject);
+    createTrasporter()
 
     template = compileTemplate(templateName, data)
     const info = await transporter

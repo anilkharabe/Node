@@ -2,7 +2,7 @@ const User = require('../models/user.model');
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const xlsx = require('xlsx')
-const {sendEmail} = require('../src/email/email.service')
+const emailService = require('../src/email/email.service')
 
 const createUser = async (req, res) => {
   try {
@@ -17,7 +17,7 @@ const createUser = async (req, res) => {
     
     delete userRes.password; // password is not deleted here// need to delete password
     
-    await sendEmail({to:email, subject:'Welcome to node js: my app', templateName: 'welcome', data:{name, email}})
+    await emailService.sendEmail({to:email, subject:'Welcome to node js: my app', templateName: 'welcome', data:{name, email}})
 
     res.status(200).json(userRes);
   } catch (error) {
@@ -83,16 +83,18 @@ const accessMyProfile = async(req, res) =>{
 const login = async(req, res) =>{
   const {email, password} = req.body;
 
+  // 1. user not found
   const user = await User.findOne({email: email});
 
   if(!user){
-      res.json({
+      return res.json({
       message:"Invalid credentials"
     }) 
   }
-
+  // bcrypy => return true/ false 
   const isPasswordValid = await bcrypt.compare(password, user.password)
-
+  //2. user is valid, email and password is correct
+  
   if(isPasswordValid){
 
     const token = jwt.sign({userId: user._id, role: user.role}, 'secret_key', {expiresIn: '1hr'})
@@ -102,8 +104,9 @@ const login = async(req, res) =>{
       token
     }) 
   }else{
+    //3. password is wrong
     res.json({
-      message:"Invalid credentials"
+      message:"Invalid credentials, password is wrong"
     })
   }
 }

@@ -3,13 +3,30 @@ const request = require("supertest");
 const app = require("../app");
 const mongoose = require("mongoose");
 const User = require("../models/user.model");
+const sinon = require('sinon');
+const emailService = require('../src/email/email.service')
 
 before(async () => {
   await mongoose.connect("mongodb://127.0.0.1:27017/test_db"); // async
 });
 
+// mocking
+// return controlled logic
+before(()=>{
+  sinon.stub(emailService, 'sendEmail').resolves(true);
+})
+
+before(()=>{
+  sinon.stub(User, 'findById').resolves({
+    _id:"123242",
+    name:"Rahul",
+    email: "testing@gmail.com"
+  })
+})
+
 after(async () => {
   await mongoose.connection.close();
+  sinon.restore();
 });
 
 afterEach(async () => {
@@ -37,4 +54,10 @@ describe("POST /users", () => {
     });
     expect(res.status).to.equal(400);
   });
+
+  it('should return user details',async()=>{
+    const user = await User.findById('123242');
+    console.log('User data', user)
+  })
+  
 });

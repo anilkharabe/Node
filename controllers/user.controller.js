@@ -26,15 +26,26 @@ const createUser = async (req, res) => {
   }
 }
 
+
+// heavy task = 5 seconds
 const getUsers = async (req, res) => {
   try {
+    const start = Date.now();
+
+    // BLOCK the event loop for 5 seconds
+    while (Date.now() - start < 5000) {
+      // busy wait
+    }
+
     const users = await User.find();
     res.status(200).json(users);
+
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-}
+};
 
+// time = -.05 ms
 const getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);

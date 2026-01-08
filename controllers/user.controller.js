@@ -17,7 +17,7 @@ const createUser = async (req, res) => {
     
     delete userRes.password; // password is not deleted here// need to delete password
     
-    await emailService.sendEmail({to:email, subject:'Welcome to node js: my app', templateName: 'welcome', data:{name, email}})
+    // await emailService.sendEmail({to:email, subject:'Welcome to node js: my app', templateName: 'welcome', data:{name, email}})
 
     res.status(200).json(userRes);
   } catch (error) {
@@ -112,7 +112,8 @@ const login = async(req, res) =>{
 
     res.json({
       message:"login successfully",
-      token
+      accessToken: token,
+      user
     }) 
   }else{
     //3. password is wrong

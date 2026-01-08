@@ -1,5 +1,6 @@
 const express = require("express");
 const { fork } = require("child_process"); // heavy task, terminal command, cross language like python, java function calling
+const cors = require ("cors");
 
 const userRouter = require('./routes/userRoutes')
 const orderRouter = require('./routes/orderRoutes')
@@ -7,6 +8,19 @@ const profileRouter = require('./routes/profileRoutes')
 
 const app = express();
 app.use(express.json()); // application-level middleware // body parsing // build-in middleware
+
+
+// security
+app.use(
+  cors({
+    origin: "http://localhost:1234", // React dev server
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+// app.options("*", cors());
 
 // application level custum middleware
 // logging - TBD

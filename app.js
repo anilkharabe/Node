@@ -5,6 +5,7 @@ const cors = require ("cors");
 const userRouter = require('./routes/userRoutes')
 const orderRouter = require('./routes/orderRoutes')
 const profileRouter = require('./routes/profileRoutes')
+const restaurantRoutes = require("./routes/restaurantRoutes");
 
 const app = express();
 app.use(express.json()); // application-level middleware // body parsing // build-in middleware
@@ -41,6 +42,7 @@ app.use(loggerMiddleware)
 app.use('/users', userRouter)
 app.use('/order', orderRouter)
 app.use('/profile', profileRouter)
+app.use("/restaurants", restaurantRoutes);
 
 
 app.get("/calculate", (req, res) => {

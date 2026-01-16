@@ -10,7 +10,7 @@ const storage= multer.memoryStorage();
 
 const excelUpload = multer({
     storage,
-    limits:{fileSize: 5 * 1024 * 1024},  //5mb file size
+    limits:{fileSize: 10 * 1024 * 1024},  // 10mb file size
     fileFilter: (req, file, cb)=>{
         if(file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'){
             cb(null, true) // green sign that we can proceed

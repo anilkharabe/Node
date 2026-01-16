@@ -1,4 +1,5 @@
 const Restaurant = require("../models/Restaurant");
+const XLSX = require("xlsx");
 
 /* ----------------------------------
    ADMIN: Create Restaurant
@@ -142,3 +143,53 @@ exports.deleteRestaurant = async (req, res) => {
     });
   }
 };
+
+
+exports.bulkUploadRestaurants = async (req, res) => {
+  try {
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    // Read Excel
+    const workbook = XLSX.read(req.file.buffer);
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet);
+
+    if (!rows.length) {
+      return res.status(400).json({ message: "Empty Excel file" });
+    }
+
+    const restaurants = rows.map((row, index) => {
+      
+      if (!row.name || !row.cloudinaryImageId || !row.deliveryTime) {
+        throw new Error(`Invalid data at row ${index + 2}`);
+      }
+
+      return {
+        name: row.name,
+        cloudinaryImageId: row.cloudinaryImageId,
+        cuisines: row.cuisines
+          ? row.cuisines.split(",").map(c => c.trim())
+          : [],
+        avgRating: row.avgRating || 0,
+        deliveryTime: Number(row.deliveryTime),
+      };
+    });
+
+    await Restaurant.insertMany(restaurants);
+
+    res.status(201).json({
+      message: "Restaurants uploaded successfully",
+      count: restaurants.length,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Bulk upload failed",
+      error: error.message,
+    });
+  }
+};
+
+

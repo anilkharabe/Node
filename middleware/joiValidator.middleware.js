@@ -8,7 +8,7 @@ function joiValidator(schema){
         if(error){
             logger.error(error)
             return res.status(400).json({
-                message:'validation failed',
+                message:'validation failed - joi validation',
                 error: error.details.map((e)=>{
                     return e.message
                 })

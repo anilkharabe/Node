@@ -44,6 +44,7 @@ const createRestaurantSchema = Joi.object({
       "number.base": "Delivery time must be a number",
       "number.min": "Delivery time must be at least 1 minute",
     }),
+    user: Joi.object()
 });
 
 module.exports = {

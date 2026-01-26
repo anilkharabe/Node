@@ -7,7 +7,7 @@ const sinon = require('sinon');
 const emailService = require('../src/email/email.service')
 
 before(async () => {
-  await mongoose.connect("mongodb://127.0.0.1:27017/test_db"); // async
+  await mongoose.connect(processe.env.MONGODB_URL_TESTING); // async
 });
 
 // mocking

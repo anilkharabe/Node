@@ -1,6 +1,7 @@
 const express = require("express");
 const { fork } = require("child_process"); // heavy task, terminal command, cross language like python, java function calling
 const cors = require ("cors");
+const path = require("path");
 
 const userRouter = require('./routes/userRoutes')
 const orderRouter = require('./routes/orderRoutes')
@@ -32,12 +33,17 @@ app.use(
 
 // application level custum middleware
 
-const loggerMiddleware = (req, res, next)=>{
-  console.log('req.method', req.method, req.url);
-  next();
-}
+// const loggerMiddleware = (req, res, next)=>{
+//   console.log('req.method', req.method, req.url);
+//   next();
+// }
 //  middleware1 => middleware2 => middleware3 => so on
-app.use(loggerMiddleware)
+// app.use(loggerMiddleware)
+
+
+// Serve React build
+app.use(express.static(path.join(__dirname, "public")));
+
 
 
 app.use('/users', userRouter)
@@ -64,6 +70,12 @@ app.get("/calculate", (req, res) => {
 app.get('/health', (req, res)=>{
   res.json({message: 'working properly'})
 })
+
+app.use((req, res) => {
+  res.sendFile(
+    path.join(__dirname, "public", "index.html")
+  );
+});
 
 // application level custum middleware
 // error handling middleware - TBD
